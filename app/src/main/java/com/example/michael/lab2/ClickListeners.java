@@ -25,6 +25,16 @@ public class ClickListeners {
         };
     }
 
+//    public static View.OnClickListener delButtonListener(final Activity activity, final HandlerDatabase database){
+//        // stuff to do when button is clicked
+//        return new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                database.deleteChatByTime(chat.time);
+//            }
+//        };
+//    }
+
     public static void changeUsernameListener(final Activity activity){
         // stuff to do when change username button is clicked
         // create dialogue box of AlertDialog type (predefined)

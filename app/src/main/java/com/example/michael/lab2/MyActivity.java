@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -18,25 +19,33 @@ public class MyActivity extends Activity {
     public static String username = "default";
     public static String userId = "0001";
 
+    HandlerDatabase database;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my); // inflater (wat?)
 
+        database = new HandlerDatabase(this);
+        database.open();
+
         if (username.equals("default")){
             Toast.makeText(this, "You are signed in as default! Click the user icon to change your name!", Toast.LENGTH_SHORT).show();
         }
 
-        getChats(); // run other setup stuff
+        // makes sure chatAdapter exists, populate it with list of chats
+        getChats();
+        // sets chatList's adapter to chatAdapter, and binds click listener
         setupViews();
-        Log.i(MyActivity.class.getSimpleName(), "Hello, World!");
+        Log.i(MyActivity.class.getSimpleName(), "Activity Initialized.");
     }
 
     private void getChats(){
-        // make list of chats of type ModelChat
-        List<ChatModel> newChats = new ArrayList<ChatModel>();
+        // make list of chats of type ChatModel
+        List<ChatModel> newChats = database.getAllChats();
+//        List<ChatModel> newChats = new ArrayList<ChatModel>();
         if (chatAdapter == null)
-            chatAdapter = new ChatAdapter(this, new ArrayList<ChatModel>(), R.layout.chat_item);
+            chatAdapter = new ChatAdapter(this, R.layout.chat_item, new ArrayList<ChatModel>(), database);
         chatAdapter.addChats(newChats);
     }
 
@@ -48,7 +57,10 @@ public class MyActivity extends Activity {
         input.clearFocus();
 
         Button sendButton = (Button) findViewById(R.id.main_input_button);
-        sendButton.setOnClickListener(ClickListeners.sendButtonListener(this,chatAdapter));
+        sendButton.setOnClickListener(ClickListeners.sendButtonListener(this, chatAdapter));
+
+//        ImageButton delButton = (ImageButton) findViewById(R.id.chat_item_pic);
+//        delButton.setOnClickListener(ClickListeners.delButtonListener(this, database));
     }
 
     @Override

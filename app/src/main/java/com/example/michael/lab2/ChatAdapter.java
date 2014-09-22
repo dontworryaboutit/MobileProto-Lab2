@@ -14,18 +14,20 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Handler;
 
 public class ChatAdapter extends ArrayAdapter {
     private List<ChatModel> chats = new ArrayList<ChatModel>();
     private int resource;
     private Context context;
+    private HandlerDatabase database;
 
-    public ChatAdapter(Context context, List<ChatModel> chats, int resource) {
-        super(context, R.layout.chat_item);
+    public ChatAdapter(Context context, int resource, List<ChatModel> chats, HandlerDatabase database) {
+        super(context, resource);
         // make context accessible from outside adapter (k?)
         this.context = context;
         this.resource = resource;
-
+        this.database = database;
         addChats(chats);
     }
 
@@ -94,6 +96,7 @@ public class ChatAdapter extends ArrayAdapter {
 
     public void addChat(ChatModel chat) {
         this.chats.add(chat);
+        this.database.addChatToDatabase(chat);
         notifyDataSetChanged();
     }
 }

@@ -13,6 +13,13 @@
         android:layout_marginRight="@dimen/chat_item_img_margin_right"
         android:layout_marginEnd="@dimen/chat_item_img_margin_right"
         android:background="@android:color/holo_blue_dark" >
+        <!--<ImageButton-->
+            <!--android:id="@+id/chat_item_pic"-->
+            <!--android:contentDescription="@string/chat_item_pic_name"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:padding="@dimen/chat_item_img_padding"-->
+            <!--android:src="@drawable/ic_launcher" />-->
         <ImageView
             android:id="@+id/chat_item_pic"
             android:contentDescription="@string/chat_item_pic_name"
