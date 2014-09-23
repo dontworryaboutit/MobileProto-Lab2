@@ -16,10 +16,9 @@ public class HandlerDatabase {
 
     //All Fields
     private String[] allColumns = {
-            ModelDatabase.CHAT_SENDER,
-            ModelDatabase.CHAT_BODY,
-            ModelDatabase.CHAT_USERID,
-            ModelDatabase.CHAT_TIME,
+            ModelDatabase.CHAT_NAME,
+            ModelDatabase.CHAT_MESSAGE,
+            ModelDatabase.CHAT_TIMESTAMP,
     };
 
     // Main Activity is the context of the database
@@ -30,38 +29,21 @@ public class HandlerDatabase {
     /**
      * Add
      */
-    public void addChatToDatabase(String sender, String body, String userId, long time){
-        ContentValues values = new ContentValues();
-        values.put(ModelDatabase.CHAT_SENDER, sender);
-        values.put(ModelDatabase.CHAT_BODY, body);
-        values.put(ModelDatabase.CHAT_USERID, userId);
-        values.put(ModelDatabase.CHAT_TIME, time);
-        database.insertWithOnConflict(ModelDatabase.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_IGNORE);
-    }
     public void addChatToDatabase(ChatModel chat){
         ContentValues values = new ContentValues();
-        values.put(ModelDatabase.CHAT_SENDER, chat.sender);
-        values.put(ModelDatabase.CHAT_BODY, chat.body);
-        values.put(ModelDatabase.CHAT_USERID, chat.userId);
-        values.put(ModelDatabase.CHAT_TIME, chat.time);
+        values.put(ModelDatabase.CHAT_NAME, chat.name);
+        values.put(ModelDatabase.CHAT_MESSAGE, chat.message);
+        values.put(ModelDatabase.CHAT_TIMESTAMP, chat.timestamp);
         database.insertWithOnConflict(ModelDatabase.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_IGNORE);
-    }
-    public void updateChat(ChatModel chat){
-        ContentValues values = new ContentValues();
-        values.put(ModelDatabase.CHAT_SENDER, chat.sender);
-        values.put(ModelDatabase.CHAT_BODY, chat.body);
-        values.put(ModelDatabase.CHAT_USERID, chat.userId);
-        values.put(ModelDatabase.CHAT_TIME, chat.time);
-        database.update(ModelDatabase.TABLE_NAME, values, ModelDatabase.CHAT_TIME + " like '%" + Long.toString(chat.time) + "%'", null);
     }
 
     /**
      * Delete
      */
-    public void deleteChatByTime(long time){
+    public void deleteChatByTimestamp(long timestamp){
         database.delete(
                 ModelDatabase.TABLE_NAME,
-                ModelDatabase.CHAT_TIME + " like '%" + Long.toString(time) + "%'",
+                ModelDatabase.CHAT_TIMESTAMP + " like '%" + Long.toString(timestamp) + "%'",
                 null
         );
     }
@@ -72,18 +54,7 @@ public class HandlerDatabase {
     public ArrayList<ChatModel> getAllChats(){
         return sweepCursor(database.query(ModelDatabase.TABLE_NAME, allColumns, null, null, null, null, null));
     }
-    public ArrayList<ChatModel> getChatBySender(String sender){
-        return sweepCursor(database.query(
-                ModelDatabase.TABLE_NAME,
-                allColumns,
-                ModelDatabase.CHAT_SENDER + " like '%" + sender + "%'",
-                null, null, null, null, null
-        ));
-    }
 
-    /**
-     * Additional Helpers
-     */
     // Sweep Through Cursor and return a List of Chats
     private ArrayList<ChatModel> sweepCursor(Cursor cursor){
         ArrayList<ChatModel> chats = new ArrayList<ChatModel>();
@@ -95,8 +66,7 @@ public class HandlerDatabase {
             ChatModel chat = new ChatModel(
                     cursor.getString(0),
                     cursor.getString(1),
-                    cursor.getString(2),
-                    Long.parseLong(cursor.getString(3), 10)
+                    Long.parseLong(cursor.getString(2))
             );
             //Add the Chat
             chats.add(chat);

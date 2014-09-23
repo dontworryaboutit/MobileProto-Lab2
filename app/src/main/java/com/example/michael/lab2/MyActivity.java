@@ -18,7 +18,6 @@ import java.util.List;
 public class MyActivity extends Activity {
     ChatAdapter chatAdapter;
     public static String username = "default";
-    public static String userId = "0001";
 
     HandlerDatabase database;
 

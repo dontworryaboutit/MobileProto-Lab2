@@ -2,28 +2,26 @@ package com.example.michael.lab2;
 
 public class ChatModel implements Comparable {
     // class to contain chat message information
-    public String sender, body, userId;
-    public long time;
+    public String name, message;
+    public long timestamp;
 
-    public ChatModel(String sender, String body, String userId){
+    public ChatModel(String sender, String message){
         // constructor to assign values
-        this.sender = sender;
-        this.body = body;
-        this.userId = userId;
-        this.time = System.currentTimeMillis();
+        this.name = sender;
+        this.message = message;
+        this.timestamp = System.currentTimeMillis();
     }
 
-    public ChatModel(String sender, String body, String userId, long time){
+    public ChatModel(String sender, String message, long timestamp){
         // constructor to assign values
-        this.sender = sender;
-        this.body = body;
-        this.userId = userId;
-        this.time = time;
+        this.name = sender;
+        this.message = message;
+        this.timestamp = timestamp;
     }
 
     // compare times of objects
     @Override
     public int compareTo(Object object) {
-        return (time < ((ChatModel) object).time)?1:0;
+        return (timestamp < ((ChatModel) object).timestamp)?1:0;
     }
 }

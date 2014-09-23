@@ -3,7 +3,6 @@ package com.example.michael.lab2;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
@@ -21,7 +20,7 @@ public class ClickListeners {
                     Toast.makeText(activity, "You didn't type anything in!", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                chatAdapter.addChat(new ChatModel(MyActivity.username, input.getText().toString(), MyActivity.userId));
+                chatAdapter.addChat(new ChatModel(MyActivity.username, input.getText().toString()));
                 input.setText("");
             }
         };
@@ -47,7 +46,7 @@ public class ClickListeners {
                                     return;
                                 }
                                 chatAdapter.deleteChat(chat);
-                                database.deleteChatByTime(chat.time);
+                                database.deleteChatByTimestamp(chat.timestamp);
                                 Toast.makeText(activity, "Deleted message #" + id + "!", Toast.LENGTH_SHORT).show();
                                 dialogInterface.dismiss();
                             }
