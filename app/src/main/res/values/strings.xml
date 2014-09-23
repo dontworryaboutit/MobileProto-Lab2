@@ -4,6 +4,7 @@
     <string name="app_name">Chat Box</string>
 
     <string name="menu_change_username_prompt">Set Username</string>
+    <string name="menu_delete_chat_prompt">Delete Message</string>
 
     <string name="main_button">Enter</string>
     <string name="main_input_entry_hint">Text here</string>

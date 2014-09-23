@@ -85,8 +85,17 @@ public class ChatAdapter extends ArrayAdapter {
         return new SimpleDateFormat("MM/DD, hh:mm:ss a").format(new Date(time));
     }
 
-    private Drawable getProfileDrawable(String id) {
-        return null;
+    public ChatModel getChat(int index) {
+        if(index + 1 > this.chats.size() || index < 0) {
+            return null;
+        } else {
+            return this.chats.get(index);
+        }
+    }
+
+    public void deleteChat(ChatModel chat) {
+        this.chats.remove(chat);
+        notifyDataSetChanged();
     }
 
     public void addChats(List<ChatModel> newChats) {

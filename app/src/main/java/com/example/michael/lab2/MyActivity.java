@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -52,6 +53,7 @@ public class MyActivity extends Activity {
     private void setupViews(){
         ListView chatList = (ListView) findViewById(R.id.main_output_layout);
         chatList.setAdapter(chatAdapter);
+//        chatList.setOnItemClickListener(ClickListeners.clickChatListener(this, chatAdapter));
 
         final EditText input = (EditText) findViewById(R.id.main_input_entry);
         input.clearFocus();
@@ -78,6 +80,10 @@ public class MyActivity extends Activity {
         switch (item.getItemId()){
             case R.id.menu_change_username:
                 ClickListeners.changeUsernameListener(this);
+                return true;
+            case R.id.menu_delete_chat:
+                ClickListeners.deleteMessageListener(this, chatAdapter, database);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

@@ -65,6 +65,13 @@ public class HandlerDatabase {
                 null
         );
     }
+    public void deleteAllChats(){
+        database.delete(
+                ModelDatabase.TABLE_NAME,
+                null,
+                null
+        );
+    }
 
     /**
      * Get

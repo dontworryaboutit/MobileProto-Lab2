@@ -3,13 +3,15 @@ package com.example.michael.lab2;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.Toast;
 
 public class ClickListeners {
 
-    public static View.OnClickListener sendButtonListener(final Activity activity, final ChatAdapter adapter){
+    public static View.OnClickListener sendButtonListener(final Activity activity, final ChatAdapter chatAdapter){
         // stuff to do when button is clicked
         return new View.OnClickListener() {
             @Override
@@ -19,21 +21,58 @@ public class ClickListeners {
                     Toast.makeText(activity, "You didn't type anything in!", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                adapter.addChat(new ChatModel(MyActivity.username, input.getText().toString(), MyActivity.userId));
+                chatAdapter.addChat(new ChatModel(MyActivity.username, input.getText().toString(), MyActivity.userId));
                 input.setText("");
             }
         };
     }
 
-//    public static View.OnClickListener delButtonListener(final Activity activity, final HandlerDatabase database){
-//        // stuff to do when button is clicked
-//        return new View.OnClickListener() {
+//    public static AdapterView.OnItemClickListener clickChatListener(final Activity activity, final ChatAdapter chatAdapter){
+//        // stuff to do when chat message is clicked
+//        return new AdapterView.OnItemClickListener() {
 //            @Override
-//            public void onClick(View view) {
-//                database.deleteChatByTime(chat.time);
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                Toast.makeText(activity, "You clicked message #" + id + "!", Toast.LENGTH_SHORT).show();
 //            }
 //        };
 //    }
+
+    public static void deleteMessageListener(final Activity activity,
+                                             final ChatAdapter chatAdapter,
+                                             final HandlerDatabase database){
+        // stuff to do when button is clicked
+        final EditText input = new EditText(activity);
+        new AlertDialog.Builder(activity)
+                .setTitle("Delete Message")
+                .setMessage("Enter a message number to delete.")
+                .setView(input)
+                .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        String indexStr = input.getText().toString();
+                        if (indexStr.equals("")) {
+                            Toast.makeText(activity, "Discarded; pick a number!", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        int indexNum = Integer.parseInt(indexStr);
+                        ChatModel chat = chatAdapter.getChat(indexNum);
+                        if (chat == null) {
+                            Toast.makeText(activity, "Discarded; invalid index!", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        chatAdapter.deleteChat(chat);
+                        database.deleteChatByTime(chat.time);
+                        Toast.makeText(activity, "Deleted message #" + indexNum + "!", Toast.LENGTH_SHORT).show();
+                        dialogInterface.dismiss();
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                }).show();
+    }
 
     public static void changeUsernameListener(final Activity activity){
         // stuff to do when change username button is clicked
