@@ -31,7 +31,7 @@ public class MyActivity extends Activity {
         database.open();
 
         if (username.equals("default")){
-            Toast.makeText(this, "You are signed in as default! Click the user icon to change your name!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "You are signed in as default! Click SET USERNAME to change your name!", Toast.LENGTH_SHORT).show();
         }
 
         // makes sure chatAdapter exists, populate it with list of chats
@@ -53,16 +53,13 @@ public class MyActivity extends Activity {
     private void setupViews(){
         ListView chatList = (ListView) findViewById(R.id.main_output_layout);
         chatList.setAdapter(chatAdapter);
-//        chatList.setOnItemClickListener(ClickListeners.clickChatListener(this, chatAdapter));
+        chatList.setOnItemClickListener(ClickListeners.clickChatListener(this, chatAdapter, database));
 
         final EditText input = (EditText) findViewById(R.id.main_input_entry);
         input.clearFocus();
 
         Button sendButton = (Button) findViewById(R.id.main_input_button);
         sendButton.setOnClickListener(ClickListeners.sendButtonListener(this, chatAdapter));
-
-//        ImageButton delButton = (ImageButton) findViewById(R.id.chat_item_pic);
-//        delButton.setOnClickListener(ClickListeners.delButtonListener(this, database));
     }
 
     @Override
@@ -80,9 +77,6 @@ public class MyActivity extends Activity {
         switch (item.getItemId()){
             case R.id.menu_change_username:
                 ClickListeners.changeUsernameListener(this);
-                return true;
-            case R.id.menu_delete_chat:
-                ClickListeners.deleteMessageListener(this, chatAdapter, database);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

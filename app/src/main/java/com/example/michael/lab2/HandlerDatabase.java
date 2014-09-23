@@ -65,13 +65,6 @@ public class HandlerDatabase {
                 null
         );
     }
-    public void deleteAllChats(){
-        database.delete(
-                ModelDatabase.TABLE_NAME,
-                null,
-                null
-        );
-    }
 
     /**
      * Get
@@ -86,14 +79,6 @@ public class HandlerDatabase {
                 ModelDatabase.CHAT_SENDER + " like '%" + sender + "%'",
                 null, null, null, null, null
         ));
-    }
-    public ChatModel getChatByTime(long time){
-        return sweepCursor(database.query(
-                ModelDatabase.TABLE_NAME,
-                allColumns,
-                ModelDatabase.CHAT_TIME + " like '%" + Long.toString(time) + "%'",
-                null, null, null, null
-        )).get(0);
     }
 
     /**

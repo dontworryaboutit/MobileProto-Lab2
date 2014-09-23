@@ -27,51 +27,39 @@ public class ClickListeners {
         };
     }
 
-//    public static AdapterView.OnItemClickListener clickChatListener(final Activity activity, final ChatAdapter chatAdapter){
-//        // stuff to do when chat message is clicked
-//        return new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                Toast.makeText(activity, "You clicked message #" + id + "!", Toast.LENGTH_SHORT).show();
-//            }
-//        };
-//    }
-
-    public static void deleteMessageListener(final Activity activity,
-                                             final ChatAdapter chatAdapter,
-                                             final HandlerDatabase database){
-        // stuff to do when button is clicked
-        final EditText input = new EditText(activity);
-        new AlertDialog.Builder(activity)
-                .setTitle("Delete Message")
-                .setMessage("Enter a message number to delete.")
-                .setView(input)
-                .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        String indexStr = input.getText().toString();
-                        if (indexStr.equals("")) {
-                            Toast.makeText(activity, "Discarded; pick a number!", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        int indexNum = Integer.parseInt(indexStr);
-                        ChatModel chat = chatAdapter.getChat(indexNum);
-                        if (chat == null) {
-                            Toast.makeText(activity, "Discarded; invalid index!", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        chatAdapter.deleteChat(chat);
-                        database.deleteChatByTime(chat.time);
-                        Toast.makeText(activity, "Deleted message #" + indexNum + "!", Toast.LENGTH_SHORT).show();
-                        dialogInterface.dismiss();
-                    }
-                })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                    }
-                }).show();
+    public static AdapterView.OnItemClickListener clickChatListener(final Activity activity,
+                                                                    final ChatAdapter chatAdapter,
+                                                                    final HandlerDatabase database){
+        // stuff to do when chat message is clicked
+        return new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, final long id) {
+                // stuff to do when button is clicked
+                new AlertDialog.Builder(activity)
+                        .setTitle("Confirm Delete")
+                        .setMessage("Are you sure you want to delete message #" + id + "?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                ChatModel chat = chatAdapter.getChat((int) id);
+                                if (chat == null) {
+                                    Toast.makeText(activity, "Discarded; invalid index!", Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
+                                chatAdapter.deleteChat(chat);
+                                database.deleteChatByTime(chat.time);
+                                Toast.makeText(activity, "Deleted message #" + id + "!", Toast.LENGTH_SHORT).show();
+                                dialogInterface.dismiss();
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                            }
+                        }).show();
+            }
+        };
     }
 
     public static void changeUsernameListener(final Activity activity){
