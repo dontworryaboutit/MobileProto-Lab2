@@ -10,7 +10,7 @@ import android.widget.Toast;
 
 public class ClickListeners {
 
-    public static AlertDialog.Builder getEditDialogBuilder(final Activity activity, final ChatAdapter chatAdapter, final long id) {
+    public static AlertDialog.Builder getEditMessageDialogBuilder(final Activity activity, final ChatAdapter chatAdapter, final long id) {
         final EditText inputMessage = new EditText(activity);
         inputMessage.setText(chatAdapter.getChatMessage((int) id));
         return new AlertDialog.Builder(activity)
@@ -72,7 +72,7 @@ public class ClickListeners {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 dialogInterface.dismiss();
-                                getEditDialogBuilder(activity, chatAdapter, id).show();
+                                getEditMessageDialogBuilder(activity, chatAdapter, id).show();
                             }
                         })
                         .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
@@ -83,7 +83,6 @@ public class ClickListeners {
                                     return;
                                 }
                                 chatAdapter.deleteChat(chat);
-//                                database.deleteChatByTimestamp(chat.timestamp);
                                 Toast.makeText(activity, "Deleted message #" + id + "!", Toast.LENGTH_SHORT).show();
                                 dialogInterface.dismiss();
                             }
