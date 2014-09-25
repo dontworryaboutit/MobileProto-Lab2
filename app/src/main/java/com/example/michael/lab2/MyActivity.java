@@ -12,6 +12,10 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.firebase.client.Firebase;
+
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +32,21 @@ public class MyActivity extends Activity {
 
         database = new HandlerDatabase(this);
         database.open();
+
+        Firebase myFireBaseRef = new Firebase("https://mobileproto2014.firebaseio.com/chatroom/0");
+//        JSONObject testObject = new JSONObject();
+//        try {
+//            testObject.put("name", "Searing");
+//            testObject.put("message", "Hello, World!");
+//            testObject.put("timestamp", Long.toString(System.currentTimeMillis()));
+//        } catch (org.json.JSONException e) {
+//            throw new RuntimeException(e);
+//        }
+
+        ChatModel testObject = new ChatModel("Searing", "Hello, World!");
+        Log.i(MyActivity.class.getSimpleName(), "here, yo");
+        myFireBaseRef.push().setValue(testObject);
+        Log.i(MyActivity.class.getSimpleName(), "now here, yo");
 
         if (username.equals("default")){
             Toast.makeText(this, "You are signed in as default! Click SET USERNAME to change your name!", Toast.LENGTH_SHORT).show();
