@@ -52,7 +52,7 @@ public class MyActivity extends Activity {
     private void setupViews(){
         ListView chatList = (ListView) findViewById(R.id.main_output_layout);
         chatList.setAdapter(chatAdapter);
-        chatList.setOnItemClickListener(ClickListeners.clickChatListener(this, chatAdapter, database));
+        chatList.setOnItemClickListener(ClickListeners.clickChatListener(this, chatAdapter));
 
         final EditText input = (EditText) findViewById(R.id.main_input_entry);
         input.clearFocus();

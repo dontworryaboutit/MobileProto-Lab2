@@ -10,6 +10,31 @@ import android.widget.Toast;
 
 public class ClickListeners {
 
+    public static AlertDialog.Builder getEditDialogBuilder(final Activity activity, final ChatAdapter chatAdapter, final long id) {
+        final EditText inputMessage = new EditText(activity);
+        return new AlertDialog.Builder(activity)
+                .setTitle("Edit Message #" + id)
+                .setMessage("Modify message information below:")
+                .setView(inputMessage)
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                }).setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        String newMessage = inputMessage.getText().toString();
+                        if (newMessage.equals("")) {
+                            Toast.makeText(activity, "Discarded; can't be blank!", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        chatAdapter.updateChat((int) id, newMessage);
+                        dialogInterface.dismiss();
+                    }
+                });
+    }
+
     public static View.OnClickListener sendButtonListener(final Activity activity, final ChatAdapter chatAdapter){
         // stuff to do when button is clicked
         return new View.OnClickListener() {
@@ -27,8 +52,7 @@ public class ClickListeners {
     }
 
     public static AdapterView.OnItemClickListener clickChatListener(final Activity activity,
-                                                                    final ChatAdapter chatAdapter,
-                                                                    final HandlerDatabase database){
+                                                                    final ChatAdapter chatAdapter){
         // stuff to do when chat message is clicked
         return new AdapterView.OnItemClickListener() {
             @Override
@@ -47,28 +71,7 @@ public class ClickListeners {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 dialogInterface.dismiss();
-                                final EditText inputMessage = new EditText(activity);
-                                new AlertDialog.Builder(activity)
-                                    .setTitle("Edit Message #" + id)
-                                    .setMessage("Modify message information below:")
-                                    .setView(inputMessage)
-                                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            dialogInterface.dismiss();
-                                        }
-                                    }).setPositiveButton("Save", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            String newMessage = inputMessage.getText().toString();
-                                            if (newMessage.equals("")) {
-                                                Toast.makeText(activity, "Discarded; can't be blank!", Toast.LENGTH_SHORT).show();
-                                                return;
-                                            }
-                                            chatAdapter.updateChat((int) id, newMessage);
-                                            dialogInterface.dismiss();
-                                        }
-                                    }).show();
+                                getEditDialogBuilder(activity, chatAdapter, id).show();
                             }
                         })
                         .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
