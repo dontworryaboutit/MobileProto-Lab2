@@ -12,6 +12,7 @@ public class ClickListeners {
 
     public static AlertDialog.Builder getEditDialogBuilder(final Activity activity, final ChatAdapter chatAdapter, final long id) {
         final EditText inputMessage = new EditText(activity);
+        inputMessage.setText(chatAdapter.getChatMessage((int) id));
         return new AlertDialog.Builder(activity)
                 .setTitle("Edit Message #" + id)
                 .setMessage("Modify message information below:")
@@ -29,7 +30,7 @@ public class ClickListeners {
                             Toast.makeText(activity, "Discarded; can't be blank!", Toast.LENGTH_SHORT).show();
                             return;
                         }
-                        chatAdapter.updateChat((int) id, newMessage);
+                        chatAdapter.updateChatMessage((int) id, newMessage);
                         dialogInterface.dismiss();
                     }
                 });

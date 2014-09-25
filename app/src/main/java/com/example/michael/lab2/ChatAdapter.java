@@ -91,13 +91,17 @@ public class ChatAdapter extends ArrayAdapter {
         }
     }
 
+    public String getChatMessage(int index) {
+        return this.chats.get(index).message;
+    }
+
     public void deleteChat(ChatModel chat) {
         this.chats.remove(chat);
         this.database.deleteChatByTimestamp(chat.timestamp);
         notifyDataSetChanged();
     }
 
-    public void updateChat(int index, String newMessage) {
+    public void updateChatMessage(int index, String newMessage) {
         ChatModel chat = getChat(index);
         chat.message = newMessage;
         this.database.updateChatByTimestamp(chat, chat.timestamp);
