@@ -33,27 +33,54 @@ public class ClickListeners {
         return new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, final long id) {
-                // stuff to do when button is clicked
+                final ChatModel chat = chatAdapter.getChat((int) id);
                 new AlertDialog.Builder(activity)
-                        .setTitle("Confirm Delete")
-                        .setMessage("Are you sure you want to delete message #" + id + "?")
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        .setTitle("Message #" + id)
+                        .setMessage("What would you like to do with this message")
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                ChatModel chat = chatAdapter.getChat((int) id);
+                                dialogInterface.dismiss();
+                            }
+                        })
+                        .setNeutralButton("Edit", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                                final EditText inputMessage = new EditText(activity);
+                                new AlertDialog.Builder(activity)
+                                    .setTitle("Edit Message #" + id)
+                                    .setMessage("Modify message information below:")
+                                    .setView(inputMessage)
+                                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            dialogInterface.dismiss();
+                                        }
+                                    }).setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            String newMessage = inputMessage.getText().toString();
+                                            if (newMessage.equals("")) {
+                                                Toast.makeText(activity, "Discarded; can't be blank!", Toast.LENGTH_SHORT).show();
+                                                return;
+                                            }
+                                            chatAdapter.updateChat((int) id, newMessage);
+                                            dialogInterface.dismiss();
+                                        }
+                                    }).show();
+                            }
+                        })
+                        .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
                                 if (chat == null) {
                                     Toast.makeText(activity, "Discarded; invalid index!", Toast.LENGTH_SHORT).show();
                                     return;
                                 }
                                 chatAdapter.deleteChat(chat);
-                                database.deleteChatByTimestamp(chat.timestamp);
+//                                database.deleteChatByTimestamp(chat.timestamp);
                                 Toast.makeText(activity, "Deleted message #" + id + "!", Toast.LENGTH_SHORT).show();
-                                dialogInterface.dismiss();
-                            }
-                        })
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
                                 dialogInterface.dismiss();
                             }
                         }).show();
@@ -69,6 +96,12 @@ public class ClickListeners {
                 .setTitle("Change Username")
                 .setMessage("This is how you will show up to others.")
                 .setView(input)
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                })
                 .setPositiveButton("Save", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -79,12 +112,6 @@ public class ClickListeners {
                         }
                         MyActivity.username = newName;
                         Toast.makeText(activity, "New username: " + newName, Toast.LENGTH_SHORT).show();
-                        dialogInterface.dismiss();
-                    }
-                })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
                         dialogInterface.dismiss();
                     }
                 }).show();

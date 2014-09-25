@@ -38,13 +38,28 @@ public class HandlerDatabase {
     }
 
     /**
+     * Update
+     */
+    public void updateChatByTimestamp(ChatModel chat, long timestamp){
+        ContentValues values = new ContentValues();
+        values.put(ModelDatabase.CHAT_NAME, chat.name);
+        values.put(ModelDatabase.CHAT_MESSAGE, chat.message);
+        values.put(ModelDatabase.CHAT_TIMESTAMP, chat.timestamp);
+        database.update(
+            ModelDatabase.TABLE_NAME,
+            values,
+            ModelDatabase.CHAT_TIMESTAMP + " like '%" + Long.toString(timestamp) + "%'",
+            null);
+    }
+
+    /**
      * Delete
      */
     public void deleteChatByTimestamp(long timestamp){
         database.delete(
-                ModelDatabase.TABLE_NAME,
-                ModelDatabase.CHAT_TIMESTAMP + " like '%" + Long.toString(timestamp) + "%'",
-                null
+            ModelDatabase.TABLE_NAME,
+            ModelDatabase.CHAT_TIMESTAMP + " like '%" + Long.toString(timestamp) + "%'",
+            null
         );
     }
 
