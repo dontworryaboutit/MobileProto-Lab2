@@ -54,7 +54,6 @@ public class ChatAdapter extends ArrayAdapter {
             chatHolder.name = (TextView) convertView.findViewById(R.id.chat_item_name);
             chatHolder.message = (TextView) convertView.findViewById(R.id.chat_item_msg);
             chatHolder.timestamp = (TextView) convertView.findViewById(R.id.chat_item_time);
-            chatHolder.background = convertView.findViewById(R.id.chat_item_img);
             chatHolder.picture = (ImageView) convertView.findViewById(R.id.chat_item_pic);
             convertView.setTag(chatHolder);
         } else {
