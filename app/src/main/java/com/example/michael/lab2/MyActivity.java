@@ -17,7 +17,7 @@ import java.util.List;
 
 public class MyActivity extends Activity {
     ChatAdapter chatAdapter;
-    public static String username = "default";
+    public static String username = "Searing";
 
     HandlerDatabase database;
     Firebase firebase;
@@ -32,11 +32,6 @@ public class MyActivity extends Activity {
 
 //        firebase = new Firebase("https://mobileproto2014.firebaseio.com/chatroom/0");
         firebase = new Firebase("https://fiery-heat-9884.firebaseio.com/chatroom/0");
-
-
-        if (username.equals("default")){
-            Toast.makeText(this, "You are signed in as default! Click SET USERNAME to change your name!", Toast.LENGTH_SHORT).show();
-        }
 
         // makes sure chatAdapter exists, populate it with list of chats
         getChats();

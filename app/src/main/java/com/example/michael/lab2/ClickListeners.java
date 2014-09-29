@@ -83,7 +83,6 @@ public class ClickListeners {
                                     return;
                                 }
                                 chatAdapter.deleteChat(chat);
-                                Toast.makeText(activity, "Deleted message #" + id + "!", Toast.LENGTH_SHORT).show();
                                 dialogInterface.dismiss();
                             }
                         }).show();

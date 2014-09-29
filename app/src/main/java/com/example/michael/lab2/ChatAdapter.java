@@ -8,13 +8,17 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ChatAdapter extends ArrayAdapter {
     private List<ChatModel> chats = new ArrayList<ChatModel>();
@@ -22,14 +26,25 @@ public class ChatAdapter extends ArrayAdapter {
     private Context context;
     private HandlerDatabase database;
     private Firebase firebase;
+    private Firebase.CompletionListener syncListener;
 
-    public ChatAdapter(Context context, int resource, HandlerDatabase database, Firebase firebase, List<ChatModel> chats) {
+    public ChatAdapter(final Context context, int resource, HandlerDatabase database, Firebase firebase, List<ChatModel> chats) {
         super(context, resource);
         // make context accessible from outside adapter (k?)
         this.context = context;
         this.resource = resource;
         this.database = database;
         this.firebase = firebase;
+        this.syncListener = new Firebase.CompletionListener() {
+            @Override
+            public void onComplete(FirebaseError firebaseError, Firebase firebase) {
+                if (firebaseError != null) {
+                    Toast.makeText(context, "Failure: " + firebaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(context, "Sync Success!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        };
         populateChats(chats);
     }
 
@@ -101,6 +116,7 @@ public class ChatAdapter extends ArrayAdapter {
     public void deleteChat(ChatModel chat) {
         this.chats.remove(chat);
         this.database.deleteChatByTimestamp(chat.timestamp);
+        firebase.child(chat.name).child(Long.toString(chat.timestamp)).setValue(null, syncListener);
         notifyDataSetChanged();
     }
 
@@ -108,6 +124,11 @@ public class ChatAdapter extends ArrayAdapter {
         ChatModel chat = getChat(index);
         chat.message = newMessage;
         this.database.updateChatByTimestamp(chat, chat.timestamp);
+
+        Map<String, Object> message = new HashMap<String, Object>();
+        message.put("message", newMessage);
+        firebase.child(chat.name).child(Long.toString(chat.timestamp)).updateChildren(message, syncListener);
+
         notifyDataSetChanged();
     }
 
@@ -119,23 +140,11 @@ public class ChatAdapter extends ArrayAdapter {
     }
 
     public void addChat(ChatModel chat) {
-//      adds a new chat to current list, and to database
+//      adds a new chat to current list, database, and firebase
 //      only called once in each chat's lifetime
         this.chats.add(chat);
         this.database.addChatToDatabase(chat);
-        addChatToFirebase(chat);
+        firebase.child(chat.name).child(Long.toString(chat.timestamp)).setValue(chat, syncListener);
         notifyDataSetChanged();
-    }
-
-    public void addChatToFirebase(ChatModel chat) {
-//      creates new object in firebase
-//      note that ref.setValue() overwrites all data at ref
-//        Firebase usersRef = this.firebase.child("users");
-//        usersRef.setValue(chat);
-//        this.firebase.push();
-//        ref.setValue(chat);
-        ChatModel testObject = new ChatModel("Searing", "Hello, World!");
-        Firebase ref = firebase.child(Long.toString(testObject.timestamp));
-        ref.setValue(testObject);
     }
 }
