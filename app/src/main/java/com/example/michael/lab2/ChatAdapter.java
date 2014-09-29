@@ -9,6 +9,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.firebase.client.Firebase;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,14 +21,16 @@ public class ChatAdapter extends ArrayAdapter {
     private int resource;
     private Context context;
     private HandlerDatabase database;
+    private Firebase firebase;
 
-    public ChatAdapter(Context context, int resource, List<ChatModel> chats, HandlerDatabase database) {
+    public ChatAdapter(Context context, int resource, HandlerDatabase database, Firebase firebase, List<ChatModel> chats) {
         super(context, resource);
         // make context accessible from outside adapter (k?)
         this.context = context;
         this.resource = resource;
         this.database = database;
-        addChats(chats);
+        this.firebase = firebase;
+        populateChats(chats);
     }
 
     private class ChatHolder {
@@ -107,14 +111,31 @@ public class ChatAdapter extends ArrayAdapter {
         notifyDataSetChanged();
     }
 
-    public void addChats(List<ChatModel> newChats) {
+    public void populateChats(List<ChatModel> newChats) {
+//      used to pull chats from sql database on phone
+//      only called upon app restart (in initialization of activity)
         this.chats.addAll(newChats);
         notifyDataSetChanged();
     }
 
     public void addChat(ChatModel chat) {
+//      adds a new chat to current list, and to database
+//      only called once in each chat's lifetime
         this.chats.add(chat);
         this.database.addChatToDatabase(chat);
+        addChatToFirebase(chat);
         notifyDataSetChanged();
+    }
+
+    public void addChatToFirebase(ChatModel chat) {
+//      creates new object in firebase
+//      note that ref.setValue() overwrites all data at ref
+//        Firebase usersRef = this.firebase.child("users");
+//        usersRef.setValue(chat);
+//        this.firebase.push();
+//        ref.setValue(chat);
+        ChatModel testObject = new ChatModel("Searing", "Hello, World!");
+        Firebase ref = firebase.child(Long.toString(testObject.timestamp));
+        ref.setValue(testObject);
     }
 }

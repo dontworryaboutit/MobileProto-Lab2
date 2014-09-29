@@ -5,16 +5,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.firebase.client.Firebase;
-
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +20,7 @@ public class MyActivity extends Activity {
     public static String username = "default";
 
     HandlerDatabase database;
+    Firebase firebase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,12 +30,9 @@ public class MyActivity extends Activity {
         database = new HandlerDatabase(this);
         database.open();
 
-        Firebase myFireBaseRef = new Firebase("https://mobileproto2014.firebaseio.com/chatroom/0");
+//        firebase = new Firebase("https://mobileproto2014.firebaseio.com/chatroom/0");
+        firebase = new Firebase("https://fiery-heat-9884.firebaseio.com/chatroom/0");
 
-        ChatModel testObject = new ChatModel("Searing", "Hello, World!");
-        Log.i(MyActivity.class.getSimpleName(), "here, yo");
-        myFireBaseRef.push().setValue(testObject);
-        Log.i(MyActivity.class.getSimpleName(), "now here, yo");
 
         if (username.equals("default")){
             Toast.makeText(this, "You are signed in as default! Click SET USERNAME to change your name!", Toast.LENGTH_SHORT).show();
@@ -56,8 +50,8 @@ public class MyActivity extends Activity {
         List<ChatModel> newChats = database.getAllChats();
 //        List<ChatModel> newChats = new ArrayList<ChatModel>();
         if (chatAdapter == null)
-            chatAdapter = new ChatAdapter(this, R.layout.chat_item, new ArrayList<ChatModel>(), database);
-        chatAdapter.addChats(newChats);
+            chatAdapter = new ChatAdapter(this, R.layout.chat_item, database, firebase, new ArrayList<ChatModel>());
+        chatAdapter.populateChats(newChats);
     }
 
     private void setupViews(){
