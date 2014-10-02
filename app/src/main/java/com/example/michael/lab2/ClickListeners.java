@@ -8,7 +8,46 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.firebase.client.ChildEventListener;
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
+
+import java.util.Map;
+
 public class ClickListeners {
+
+    public static ChildEventListener firebaseChildListener(final Activity activity, final ChatAdapter chatAdapter) {
+        return new ChildEventListener() {
+            // gets new data, as it's added to firebase
+            @Override
+            public void onChildAdded(DataSnapshot snapshot, String previousChildName) {
+                Map<String, Object> chat = (Map<String, Object>) snapshot.getValue();
+                Toast.makeText(activity, chat.get("name") + " said " + chat.get("message"), Toast.LENGTH_SHORT).show();
+            }
+
+            // gets changed data
+            @Override
+            public void onChildChanged(DataSnapshot snapshot, String previousChildName) {
+                Toast.makeText(activity, "" + snapshot.child("message").getValue(), Toast.LENGTH_SHORT).show();
+            }
+
+            // gets removed data
+            @Override
+            public void onChildRemoved(DataSnapshot snapshot) {
+                long timestamp = Long.parseLong(""+snapshot.child("timestamp").getValue());
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot snapshot, String s) {}
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                firebaseError.getMessage();
+            }
+        };
+    }
+
 
     public static AlertDialog.Builder getEditMessageDialogBuilder(final Activity activity, final ChatAdapter chatAdapter, final long id) {
         final EditText inputMessage = new EditText(activity);

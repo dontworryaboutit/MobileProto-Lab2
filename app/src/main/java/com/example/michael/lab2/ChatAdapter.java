@@ -98,7 +98,7 @@ public class ChatAdapter extends ArrayAdapter {
         if (DateUtils.isToday(timestamp)) {
             return new SimpleDateFormat("E, hh:mm:ss a").format(new Date(timestamp));
         }
-        return new SimpleDateFormat("MM/DD, hh:mm:ss a").format(new Date(timestamp));
+        return new SimpleDateFormat("MM/dd, hh:mm:ss a").format(new Date(timestamp));
     }
 
     public ChatModel getChat(int index) {

@@ -27,17 +27,21 @@ public class MyActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my); // inflater (wat?)
 
-        database = new HandlerDatabase(this);
-        database.open();
-
-//        firebase = new Firebase("https://mobileproto2014.firebaseio.com/chatroom/0");
-        firebase = new Firebase("https://fiery-heat-9884.firebaseio.com/chatroom/0");
-
+        // connect app to its associated data storage
+        setupDatabases();
         // makes sure chatAdapter exists, populate it with list of chats
         getChats();
         // sets chatList's adapter to chatAdapter, and binds click listener
         setupViews();
         Log.i(MyActivity.class.getSimpleName(), "Activity Initialized.");
+    }
+
+    private void setupDatabases(){
+        database = new HandlerDatabase(this);
+        database.open();
+//        firebase = new Firebase("https://mobileproto2014.firebaseio.com/chatroom/0");
+        firebase = new Firebase("https://fiery-heat-9884.firebaseio.com/chatroom/0");
+        firebase.addChildEventListener(ClickListeners.firebaseChildListener(this, chatAdapter));
     }
 
     private void getChats(){
