@@ -9,4 +9,8 @@
         android:title="@string/menu_push_chats_prompt"
         android:orderInCategory="100"
         android:showAsAction="never" />
+    <item android:id="@+id/menu_delete_chats"
+        android:title="@string/menu_delete_chats_prompt"
+        android:orderInCategory="100"
+        android:showAsAction="never" />
 </menu>

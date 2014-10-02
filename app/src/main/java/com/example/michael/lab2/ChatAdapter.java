@@ -13,6 +13,8 @@ import android.widget.Toast;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 
+import org.apache.http.client.methods.HttpPost;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -102,13 +104,9 @@ public class ChatAdapter extends ArrayAdapter {
         }
     }
 
-    public String getChatMessage(int index) {
-        return this.chats.get(index).message;
-    }
-
     public boolean isNotDeleted(ChatModel chat) {
-        for (ChatModel deleted : this.deleted) {
-            if (deleted.timestamp == chat.timestamp) {
+        for (ChatModel test : this.deleted) {
+            if (test.timestamp == chat.timestamp) {
                 return false;
             }
         }
@@ -116,8 +114,8 @@ public class ChatAdapter extends ArrayAdapter {
     }
 
     public boolean isNotAdded(ChatModel chat) {
-        for (ChatModel added : this.chats) {
-            if (added.timestamp == chat.timestamp) {
+        for (ChatModel test : this.chats) {
+            if (test.timestamp == chat.timestamp) {
                 return false;
             }
         }
@@ -136,11 +134,38 @@ public class ChatAdapter extends ArrayAdapter {
         }
     }
 
+    public void updateFirebaseChat(ChatModel chat) {
+        long timestamp = chat.timestamp;
+        for (ChatModel test : this.chats) {
+            if (test.timestamp == timestamp) {
+                test.setMessage(chat.getMessage());
+                notifyDataSetChanged();
+                return;
+            }
+        }
+    }
+
+    public void deleteAllChats() {
+        for (ChatModel chat : this.chats) {
+            removeChat(chat);
+        }
+        Toast.makeText(context, "Delete Complete!", Toast.LENGTH_SHORT).show();
+    }
+
     public void removeChat(ChatModel chat) {
-        this.chats.remove(chat);
+        removeChatByTimestamp(chat.timestamp);
         this.database.deleteChatByTimestamp(chat.timestamp);
         this.deleted.add(chat);
         notifyDataSetChanged();
+    }
+
+    public void removeChatByTimestamp(long timestamp) {
+        for (ChatModel test : this.chats) {
+            if (test.timestamp == timestamp) {
+                this.chats.remove(test);
+                return;
+            }
+        }
     }
 
     public void updateChatMessage(int index, String newMessage) {
@@ -182,7 +207,10 @@ public class ChatAdapter extends ArrayAdapter {
         notifyDataSetChanged();
     }
 
-    public void pushChats() {
+    public void pushAllChats() {
+        while (this.getCount() > 0) {
+            removeChat(getChat(0));
+        }
         for (ChatModel chat : this.chats) {
             firebase.child(Long.toString(chat.timestamp)).setValue(chat, pushListener);
         }

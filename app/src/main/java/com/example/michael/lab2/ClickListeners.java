@@ -13,9 +13,6 @@ import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
-import com.firebase.client.ValueEventListener;
-
-import java.util.Map;
 
 public class ClickListeners {
 
@@ -30,7 +27,7 @@ public class ClickListeners {
             // gets changed data
             @Override
             public void onChildChanged(DataSnapshot snapshot, String previousChildName) {
-                Toast.makeText(activity, "" + snapshot.child("message").getValue(), Toast.LENGTH_SHORT).show();
+                chatAdapter.updateFirebaseChat(snapshot.getValue(ChatModel.class));
             }
 
             // gets removed data
@@ -40,7 +37,7 @@ public class ClickListeners {
             }
 
             @Override
-            public void onChildMoved(DataSnapshot snapshot, String s) {}
+            public void onChildMoved(DataSnapshot snapshot, String previousChildName) {}
 
             @Override
             public void onCancelled(FirebaseError firebaseError) {
@@ -52,7 +49,7 @@ public class ClickListeners {
 
     public static AlertDialog.Builder getEditMessageDialogBuilder(final Activity activity, final ChatAdapter chatAdapter, final long id) {
         final EditText inputMessage = new EditText(activity);
-        inputMessage.setText(chatAdapter.getChatMessage((int) id));
+        inputMessage.setText(chatAdapter.getChat((int) id).getMessage());
         return new AlertDialog.Builder(activity)
                 .setTitle("Edit Message #" + id)
                 .setMessage("Modify message information below:")
@@ -197,7 +194,27 @@ public class ClickListeners {
                 .setPositiveButton("Push Chats", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        chatAdapter.pushChats();
+                        chatAdapter.pushAllChats();
+                        dialogInterface.dismiss();
+                    }
+                }).show();
+    }
+
+    public static void deleteChatsListener(final Activity activity, final ChatAdapter chatAdapter) {
+        // stuff to do when delete chats button is clicked
+        new AlertDialog.Builder(activity)
+                .setTitle("Delete Chats Confirmation")
+                .setMessage("Delete all chats on this device, including from Firebase?")
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                })
+                .setPositiveButton("Delete Chats", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        chatAdapter.deleteAllChats();
                         dialogInterface.dismiss();
                     }
                 }).show();

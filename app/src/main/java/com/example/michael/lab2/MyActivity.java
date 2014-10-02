@@ -88,6 +88,9 @@ public class MyActivity extends Activity {
             case R.id.menu_push_chats:
                 ClickListeners.pushChatsListener(this, chatAdapter);
                 return true;
+            case R.id.menu_delete_chats:
+                ClickListeners.deleteChatsListener(this, chatAdapter);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
