@@ -4,5 +4,9 @@
     <item android:id="@+id/menu_change_username"
         android:title="@string/menu_change_username_prompt"
         android:orderInCategory="100"
-        android:showAsAction="always" />
+        android:showAsAction="never" />
+    <item android:id="@+id/menu_push_chats"
+        android:title="@string/menu_push_chats_prompt"
+        android:orderInCategory="100"
+        android:showAsAction="never" />
 </menu>

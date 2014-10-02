@@ -11,37 +11,41 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.firebase.client.Firebase;
+import com.firebase.client.Query;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MyActivity extends Activity {
     ChatAdapter chatAdapter;
-    public static String username = "Searing";
-
     HandlerDatabase database;
     Firebase firebase;
+    public static String username = "Searing";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my); // inflater (wat?)
 
-        // connect app to its associated data storage
-        setupDatabases();
-        // makes sure chatAdapter exists, populate it with list of chats
-        getChats();
-        // sets chatList's adapter to chatAdapter, and binds click listener
-        setupViews();
+        setupDatabase(); // connect app to its SQLite database
+        getChats(); // makes sure chatAdapter exists, populate it with list of chats
+        setupFirebase(); // connect app to its Firebase database
+        setupViews(); // sets chatList's adapter to chatAdapter, and binds click listener
         Log.i(MyActivity.class.getSimpleName(), "Activity Initialized.");
     }
 
-    private void setupDatabases(){
-        database = new HandlerDatabase(this);
-        database.open();
+    private void setupDatabase(){
 //        firebase = new Firebase("https://mobileproto2014.firebaseio.com/chatroom/0");
         firebase = new Firebase("https://fiery-heat-9884.firebaseio.com/chatroom/0");
-        firebase.addChildEventListener(ClickListeners.firebaseChildListener(this, chatAdapter));
+
+        database = new HandlerDatabase(this);
+        database.open();
+    }
+
+    private void setupFirebase(){
+        Query postsQuery = firebase.limit(10);
+        postsQuery.addChildEventListener(ClickListeners.firebaseChildListener(this, chatAdapter));
+//        firebase.addChildEventListener(ClickListeners.firebaseChildListener(this, chatAdapter));
     }
 
     private void getChats(){
@@ -80,6 +84,9 @@ public class MyActivity extends Activity {
         switch (item.getItemId()){
             case R.id.menu_change_username:
                 ClickListeners.changeUsernameListener(this);
+                return true;
+            case R.id.menu_push_chats:
+                ClickListeners.pushChatsListener(this, chatAdapter);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

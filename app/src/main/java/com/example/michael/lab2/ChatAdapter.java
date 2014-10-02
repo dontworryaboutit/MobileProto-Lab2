@@ -22,11 +22,13 @@ import java.util.Map;
 
 public class ChatAdapter extends ArrayAdapter {
     private List<ChatModel> chats = new ArrayList<ChatModel>();
+    private List<ChatModel> deleted = new ArrayList<ChatModel>();
     private int resource;
     private Context context;
     private HandlerDatabase database;
     private Firebase firebase;
     private Firebase.CompletionListener syncListener;
+    private Firebase.CompletionListener pushListener;
 
     public ChatAdapter(final Context context, int resource, HandlerDatabase database, Firebase firebase, List<ChatModel> chats) {
         super(context, resource);
@@ -35,16 +37,8 @@ public class ChatAdapter extends ArrayAdapter {
         this.resource = resource;
         this.database = database;
         this.firebase = firebase;
-        this.syncListener = new Firebase.CompletionListener() {
-            @Override
-            public void onComplete(FirebaseError firebaseError, Firebase firebase) {
-                if (firebaseError != null) {
-                    Toast.makeText(context, "Failure: " + firebaseError.getMessage(), Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(context, "Sync Success!", Toast.LENGTH_SHORT).show();
-                }
-            }
-        };
+        this.syncListener = ClickListeners.syncListener(context);
+        this.pushListener = ClickListeners.pushListener(context);
         populateChats(chats);
     }
 
@@ -52,7 +46,6 @@ public class ChatAdapter extends ArrayAdapter {
         // maintains view information
         TextView name, message, timestamp;
         ImageView picture;
-        View background;
     }
 
     @Override
@@ -113,31 +106,40 @@ public class ChatAdapter extends ArrayAdapter {
         return this.chats.get(index).message;
     }
 
-    public ChatModel getChatByTimestamp(long timestamp) {
-        for (ChatModel chat : this.chats) {
-            if (chat.timestamp == timestamp) {
-                return chat;
+    public boolean isNotDeleted(ChatModel chat) {
+        for (ChatModel deleted : this.deleted) {
+            if (deleted.timestamp == chat.timestamp) {
+                return false;
             }
         }
-        return null;
+        return true;
     }
 
-    public void removeChatByTimestamp(long timestamp) {
-//        Toast.makeText(context, "" + timestamp, Toast.LENGTH_SHORT).show();
-//        ChatModel chat = getChatByTimestamp(timestamp);
-//        Toast.makeText(context, timestamp + "removed", Toast.LENGTH_SHORT).show();
+    public boolean isNotAdded(ChatModel chat) {
+        for (ChatModel added : this.chats) {
+            if (added.timestamp == chat.timestamp) {
+                return false;
+            }
+        }
+        return true;
     }
 
-    public void deleteChat(ChatModel chat) {
-//        this.chats.remove(chat);
-//        this.database.deleteChatByTimestamp(chat.timestamp);
+    public void deleteClientChat(ChatModel chat) {
+        removeChat(chat);
         firebase.child(Long.toString(chat.timestamp)).setValue(null, syncListener);
-//        notifyDataSetChanged();
+    }
+
+    public void deleteFirebaseChat(ChatModel chat) {
+        if (isNotDeleted(chat)) {
+            removeChat(chat);
+            Toast.makeText(context, chat.message + " deleted", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void removeChat(ChatModel chat) {
         this.chats.remove(chat);
-//        this.database.deleteChatByTimestamp(chat.timestamp);
+        this.database.deleteChatByTimestamp(chat.timestamp);
+        this.deleted.add(chat);
         notifyDataSetChanged();
     }
 
@@ -160,12 +162,30 @@ public class ChatAdapter extends ArrayAdapter {
         notifyDataSetChanged();
     }
 
-    public void addChat(ChatModel chat) {
-//      adds a new chat to current list, database, and firebase
+    public void createClientChat(ChatModel chat) {
+        addChat(chat);
+        firebase.child(Long.toString(chat.timestamp)).setValue(chat, syncListener);
+    }
+
+    public void createFirebaseChat(ChatModel chat) {
+        if (isNotAdded(chat)) {
+            Toast.makeText(context, chat.name + " said " + chat.message, Toast.LENGTH_SHORT).show();
+            addChat(chat);
+        }
+    }
+
+    private void addChat(ChatModel chat) {
+//      adds a new chat to current list and database
 //      only called once in each chat's lifetime
         this.chats.add(chat);
         this.database.addChatToDatabase(chat);
-        firebase.child(Long.toString(chat.timestamp)).setValue(chat, syncListener);
         notifyDataSetChanged();
+    }
+
+    public void pushChats() {
+        for (ChatModel chat : this.chats) {
+            firebase.child(Long.toString(chat.timestamp)).setValue(chat, pushListener);
+        }
+        Toast.makeText(context, "Push Complete!", Toast.LENGTH_SHORT).show();
     }
 }

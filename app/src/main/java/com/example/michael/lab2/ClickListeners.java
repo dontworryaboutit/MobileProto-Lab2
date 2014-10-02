@@ -2,6 +2,7 @@ package com.example.michael.lab2;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.view.View;
 import android.widget.AdapterView;
@@ -10,6 +11,7 @@ import android.widget.Toast;
 
 import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 
@@ -22,10 +24,7 @@ public class ClickListeners {
             // gets new data, as it's added to firebase
             @Override
             public void onChildAdded(DataSnapshot snapshot, String previousChildName) {
-//                Map<String, Object> chat = (Map<String, Object>) snapshot.getValue();
-                ChatModel chat = snapshot.getValue(ChatModel.class);
-//                Toast.makeText(activity, chat.get("name") + " said " + chat.get("message"), Toast.LENGTH_SHORT).show();
-                Toast.makeText(activity, chat.name + " said " + chat.message, Toast.LENGTH_SHORT).show();
+                chatAdapter.createFirebaseChat(snapshot.getValue(ChatModel.class));
             }
 
             // gets changed data
@@ -37,12 +36,7 @@ public class ClickListeners {
             // gets removed data
             @Override
             public void onChildRemoved(DataSnapshot snapshot) {
-                ChatModel chat = snapshot.getValue(ChatModel.class);
-//                Toast.makeText(activity, chatAdapter.getCount(), Toast.LENGTH_SHORT).show();
-                chatAdapter.getCount();
-
-//                chatAdapter.removeChatByTimestamp((long) chat.timestamp);
-//                chatAdapter.removeChat(chat);
+                chatAdapter.deleteFirebaseChat(snapshot.getValue(ChatModel.class));
             }
 
             @Override
@@ -92,7 +86,7 @@ public class ClickListeners {
                     Toast.makeText(activity, "You didn't type anything in!", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                chatAdapter.addChat(new ChatModel(MyActivity.username, input.getText().toString()));
+                chatAdapter.createClientChat(new ChatModel(MyActivity.username, input.getText().toString()));
                 input.setText("");
             }
         };
@@ -128,7 +122,7 @@ public class ClickListeners {
                                     Toast.makeText(activity, "Discarded; invalid index!", Toast.LENGTH_SHORT).show();
                                     return;
                                 }
-                                chatAdapter.deleteChat(chat);
+                                chatAdapter.deleteClientChat(chat);
                                 dialogInterface.dismiss();
                             }
                         }).show();
@@ -136,7 +130,31 @@ public class ClickListeners {
         };
     }
 
-    public static void changeUsernameListener(final Activity activity){
+    public static Firebase.CompletionListener syncListener(final Context context) {
+        return new Firebase.CompletionListener() {
+            @Override
+            public void onComplete(FirebaseError firebaseError, Firebase firebase) {
+                if (firebaseError != null) {
+                    Toast.makeText(context, "Failure: " + firebaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(context, "Sync Success!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        };
+    }
+
+    public static Firebase.CompletionListener pushListener(final Context context) {
+        return new Firebase.CompletionListener() {
+            @Override
+            public void onComplete(FirebaseError firebaseError, Firebase firebase) {
+                if (firebaseError != null) {
+                    Toast.makeText(context, "Failure: " + firebaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        };
+    }
+
+    public static void changeUsernameListener(final Activity activity) {
         // stuff to do when change username button is clicked
         // create dialogue box of AlertDialog type (predefined)
         final EditText input = new EditText(activity);
@@ -160,6 +178,26 @@ public class ClickListeners {
                         }
                         MyActivity.username = newName;
                         Toast.makeText(activity, "New username: " + newName, Toast.LENGTH_SHORT).show();
+                        dialogInterface.dismiss();
+                    }
+                }).show();
+    }
+
+    public static void pushChatsListener(final Activity activity, final ChatAdapter chatAdapter) {
+        // stuff to do when push chats button is clicked
+        new AlertDialog.Builder(activity)
+                .setTitle("Push Chats Confirmation")
+                .setMessage("Update Firebase with all chats on this device?")
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                })
+                .setPositiveButton("Push Chats", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        chatAdapter.pushChats();
                         dialogInterface.dismiss();
                     }
                 }).show();
