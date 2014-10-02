@@ -22,8 +22,10 @@ public class ClickListeners {
             // gets new data, as it's added to firebase
             @Override
             public void onChildAdded(DataSnapshot snapshot, String previousChildName) {
-                Map<String, Object> chat = (Map<String, Object>) snapshot.getValue();
-                Toast.makeText(activity, chat.get("name") + " said " + chat.get("message"), Toast.LENGTH_SHORT).show();
+//                Map<String, Object> chat = (Map<String, Object>) snapshot.getValue();
+                ChatModel chat = snapshot.getValue(ChatModel.class);
+//                Toast.makeText(activity, chat.get("name") + " said " + chat.get("message"), Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, chat.name + " said " + chat.message, Toast.LENGTH_SHORT).show();
             }
 
             // gets changed data
@@ -35,7 +37,12 @@ public class ClickListeners {
             // gets removed data
             @Override
             public void onChildRemoved(DataSnapshot snapshot) {
-                long timestamp = Long.parseLong(""+snapshot.child("timestamp").getValue());
+                ChatModel chat = snapshot.getValue(ChatModel.class);
+//                Toast.makeText(activity, chatAdapter.getCount(), Toast.LENGTH_SHORT).show();
+                chatAdapter.getCount();
+
+//                chatAdapter.removeChatByTimestamp((long) chat.timestamp);
+//                chatAdapter.removeChat(chat);
             }
 
             @Override

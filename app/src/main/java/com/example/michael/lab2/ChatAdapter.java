@@ -113,10 +113,31 @@ public class ChatAdapter extends ArrayAdapter {
         return this.chats.get(index).message;
     }
 
+    public ChatModel getChatByTimestamp(long timestamp) {
+        for (ChatModel chat : this.chats) {
+            if (chat.timestamp == timestamp) {
+                return chat;
+            }
+        }
+        return null;
+    }
+
+    public void removeChatByTimestamp(long timestamp) {
+//        Toast.makeText(context, "" + timestamp, Toast.LENGTH_SHORT).show();
+//        ChatModel chat = getChatByTimestamp(timestamp);
+//        Toast.makeText(context, timestamp + "removed", Toast.LENGTH_SHORT).show();
+    }
+
     public void deleteChat(ChatModel chat) {
+//        this.chats.remove(chat);
+//        this.database.deleteChatByTimestamp(chat.timestamp);
+        firebase.child(Long.toString(chat.timestamp)).setValue(null, syncListener);
+//        notifyDataSetChanged();
+    }
+
+    public void removeChat(ChatModel chat) {
         this.chats.remove(chat);
-        this.database.deleteChatByTimestamp(chat.timestamp);
-        firebase.child(chat.name).child(Long.toString(chat.timestamp)).setValue(null, syncListener);
+//        this.database.deleteChatByTimestamp(chat.timestamp);
         notifyDataSetChanged();
     }
 
@@ -127,7 +148,7 @@ public class ChatAdapter extends ArrayAdapter {
 
         Map<String, Object> message = new HashMap<String, Object>();
         message.put("message", newMessage);
-        firebase.child(chat.name).child(Long.toString(chat.timestamp)).updateChildren(message, syncListener);
+        firebase.child(Long.toString(chat.timestamp)).updateChildren(message, syncListener);
 
         notifyDataSetChanged();
     }
@@ -144,7 +165,7 @@ public class ChatAdapter extends ArrayAdapter {
 //      only called once in each chat's lifetime
         this.chats.add(chat);
         this.database.addChatToDatabase(chat);
-        firebase.child(chat.name).child(Long.toString(chat.timestamp)).setValue(chat, syncListener);
+        firebase.child(Long.toString(chat.timestamp)).setValue(chat, syncListener);
         notifyDataSetChanged();
     }
 }

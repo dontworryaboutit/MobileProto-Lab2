@@ -5,6 +5,8 @@ public class ChatModel implements Comparable {
     public String name, message;
     public long timestamp;
 
+    public ChatModel(){}
+
     public ChatModel(String sender, String message){
         // constructor to assign values
         this.name = sender;
@@ -17,6 +19,30 @@ public class ChatModel implements Comparable {
         this.name = sender;
         this.message = message;
         this.timestamp = timestamp;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public String getMessage() {
+        return this.message;
+    }
+
+    public long getTimestamp() {
+        return this.timestamp;
     }
 
     // compare times of objects
