@@ -26,4 +26,5 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.firebase:firebase-client:1.0.18+'
+    compile 'com.mcxiaoke.volley:library:1.0.6'
 }
