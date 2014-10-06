@@ -47,119 +47,6 @@ public class MyActivity extends Activity {
         setupViews(); // sets chatList's adapter to chatAdapter, and binds click listener
     }
 
-    public void getString() {
-        // Instantiate the RequestQueue.
-        RequestQueue queue = Volley.newRequestQueue(this);
-        String url = "http://www.google.com";
-
-        // Request a string response from the provided URL.
-        StringRequest stringRequest = new StringRequest(
-                Request.Method.GET,
-                url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        // Display the first 500 characters of the response string.
-                        Log.i(MyActivity.class.getSimpleName(), response.substring(0,500));
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.i(MyActivity.class.getSimpleName(), "nope.");
-                    }
-                }
-        );
-    // Add the request to the RequestQueue.
-        queue.add(stringRequest);
-    }
-
-    public void getJson() {
-        final String URL = "/volley/resource/12";
-        // pass second argument as "null" for GET requests
-        JsonObjectRequest req = new JsonObjectRequest(
-                URL,
-                null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            VolleyLog.v("Response:%n %s", response.toString(4));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        VolleyLog.e("Error: ", error.getMessage());
-                    }
-                }
-        );
-
-//      add the request object to the queue to be executed
-        ApplicationController.getInstance().addToRequestQueue(req);
-    }
-
-    public void postJson() {
-        final String URL = "http://api.indico.io/political";
-//      Post params to be sent to the server
-        HashMap<String, String> params = new HashMap<String, String>();
-        params.put("text", "I'm good");
-
-        JsonObjectRequest req = new JsonObjectRequest(
-                URL,
-                new JSONObject(params),
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-//                            VolleyLog.v("Response:%n %s", response.toString(4));
-                            Log.i(MyActivity.class.getSimpleName(), response.toString(4));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        VolleyLog.e("Error: ", error.getMessage());
-                    }
-                }
-        );
-
-//      add the request object to the queue to be executed
-        ApplicationController.getInstance().addToRequestQueue(req);
-    }
-
-    public void getJsonArray() {
-        final String URL = "/volley/resource/all?count=20";
-        JsonArrayRequest req = new JsonArrayRequest(
-                URL,
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        try {
-                            VolleyLog.v("Response:%n %s", response.toString(4));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        VolleyLog.e("Error: ", error.getMessage());
-                    }
-                }
-        );
-
-//      add the request object to the queue to be executed
-        ApplicationController.getInstance().addToRequestQueue(req);
-    }
-
     private void setupDatabase(){
 //        firebase = new Firebase("https://mobileproto2014.firebaseio.com/chatroom/0");
         firebase = new Firebase("https://fiery-heat-9884.firebaseio.com/chatroom/0");
@@ -216,9 +103,6 @@ public class MyActivity extends Activity {
                 return true;
             case R.id.menu_delete_chats:
                 ClickListeners.deleteChatsListener(this, chatAdapter);
-                return true;
-            case R.id.derp:
-                postJson();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

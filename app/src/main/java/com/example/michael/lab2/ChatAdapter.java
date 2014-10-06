@@ -31,6 +31,7 @@ public class ChatAdapter extends ArrayAdapter {
     private Firebase firebase;
     private Firebase.CompletionListener syncListener;
     private Firebase.CompletionListener pushListener;
+    private Toast oldToast = null;
 
     public ChatAdapter(final Context context, int resource, HandlerDatabase database, Firebase firebase, List<ChatModel> chats) {
         super(context, resource);
@@ -39,8 +40,8 @@ public class ChatAdapter extends ArrayAdapter {
         this.resource = resource;
         this.database = database;
         this.firebase = firebase;
-        this.syncListener = ClickListeners.syncListener(context);
-        this.pushListener = ClickListeners.pushListener(context);
+        this.syncListener = ClickListeners.syncListener(this);
+        this.pushListener = ClickListeners.pushListener(this);
         populateChats(chats);
     }
 
@@ -130,7 +131,7 @@ public class ChatAdapter extends ArrayAdapter {
     public void deleteFirebaseChat(ChatModel chat) {
         if (isNotDeleted(chat)) {
             removeChat(chat);
-            Toast.makeText(context, chat.message + " deleted", Toast.LENGTH_SHORT).show();
+            toastify(chat.message + " deleted");
         }
     }
 
@@ -146,10 +147,11 @@ public class ChatAdapter extends ArrayAdapter {
     }
 
     public void deleteAllChats() {
-        for (ChatModel chat : this.chats) {
-            removeChat(chat);
+        while (this.chats.size() > 0) {
+            firebase.child(Long.toString(getChat(0).timestamp)).setValue(null, syncListener);
+            removeChat(getChat(0));
         }
-        Toast.makeText(context, "Delete Complete!", Toast.LENGTH_SHORT).show();
+        toastify("Delete Complete!");
     }
 
     public void removeChat(ChatModel chat) {
@@ -194,7 +196,7 @@ public class ChatAdapter extends ArrayAdapter {
 
     public void createFirebaseChat(ChatModel chat) {
         if (isNotAdded(chat)) {
-            Toast.makeText(context, chat.name + " said " + chat.message, Toast.LENGTH_SHORT).show();
+            toastify(chat.name + " said " + chat.message);
             addChat(chat);
         }
     }
@@ -214,6 +216,13 @@ public class ChatAdapter extends ArrayAdapter {
         for (ChatModel chat : this.chats) {
             firebase.child(Long.toString(chat.timestamp)).setValue(chat, pushListener);
         }
-        Toast.makeText(context, "Push Complete!", Toast.LENGTH_SHORT).show();
+        toastify("Push Complete!");
+    }
+
+//    Make sure toasts don't stack (cancel previous toast before creating new one)
+    public void toastify(String text) {
+        if (oldToast != null) oldToast.cancel();
+        oldToast = Toast.makeText(context, text, Toast.LENGTH_SHORT);
+        oldToast.show();
     }
 }

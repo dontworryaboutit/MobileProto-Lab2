@@ -127,25 +127,25 @@ public class ClickListeners {
         };
     }
 
-    public static Firebase.CompletionListener syncListener(final Context context) {
+    public static Firebase.CompletionListener syncListener(final ChatAdapter chatAdapter) {
         return new Firebase.CompletionListener() {
             @Override
             public void onComplete(FirebaseError firebaseError, Firebase firebase) {
                 if (firebaseError != null) {
-                    Toast.makeText(context, "Failure: " + firebaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                    chatAdapter.toastify("Failure: " + firebaseError.getMessage());
                 } else {
-                    Toast.makeText(context, "Sync Success!", Toast.LENGTH_SHORT).show();
+                    chatAdapter.toastify("Sync Success!");
                 }
             }
         };
     }
 
-    public static Firebase.CompletionListener pushListener(final Context context) {
+    public static Firebase.CompletionListener pushListener(final ChatAdapter chatAdapter) {
         return new Firebase.CompletionListener() {
             @Override
             public void onComplete(FirebaseError firebaseError, Firebase firebase) {
                 if (firebaseError != null) {
-                    Toast.makeText(context, "Failure: " + firebaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                    chatAdapter.toastify("Failure: " + firebaseError.getMessage());
                 }
             }
         };
